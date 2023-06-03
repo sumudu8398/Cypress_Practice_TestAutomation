@@ -1,12 +1,15 @@
+
+import LoginPage from '../pages/LoginPage'
+
 describe('Product Page Sorting', () => {
+
+    const loginPage = new LoginPage();
 
     beforeEach(() =>{
         cy.visit('https://www.saucedemo.com/');
 
-        // Log in with valid credentials
-        cy.get('[data-test="username"]').type('standard_user');
-        cy.get('[data-test="password"]').type('secret_sauce');
-        cy.get('[data-test="login-button"]').click();
+        //  Log in with valid credentials
+        loginPage.login('standard_user', 'secret_sauce')
 
         // Wait for the inventory to load
         cy.get('.inventory_item').should('have.length.greaterThan', 0);
