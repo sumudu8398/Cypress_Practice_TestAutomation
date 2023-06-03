@@ -1,9 +1,11 @@
 
 import LoginPage from '../pages/LoginPage'
+import ProductPage from "../pages/ProductPage";
 
 describe('Product Page Sorting', () => {
 
     const loginPage = new LoginPage();
+    const productPage = new ProductPage();
 
     beforeEach(() =>{
         cy.visit('https://www.saucedemo.com/');
@@ -14,65 +16,54 @@ describe('Product Page Sorting', () => {
         // Wait for the inventory to load
         cy.get('.inventory_item').should('have.length.greaterThan', 0);
     })
-    it('Verifying the product sorting za', () =>{
+    it('Verifying the product sorting Z - A', () =>{
 
-        cy.get('.inventory_item .inventory_item_name').then(($products) =>{
-            const initialProductNames = Array.from($products).map((product) => product.innerText);
-            console.log('Initial Product Names:', initialProductNames);
+        let initialProductNames;
 
-            cy.get('.product_sort_container').select('za');
+        productPage.getProductNames().then(names => {
+            initialProductNames = names;
 
-            cy.get('.inventory_item .inventory_item_name').then(($updatedProducts) => {
-                const updatedProductNames = Array.from($updatedProducts).map((product) => product.innerText);
+            productPage.sortProducts('za')
 
-                // verify that the product names are sorted correctly
+            productPage.getProductNames().then(updatedNames => {
                 const sortedProductNames = [...initialProductNames].sort().reverse();
-                expect(updatedProductNames).to.deep.equal(sortedProductNames);
-            });
-        });
+                expect(updatedNames).to.deep.equal(sortedProductNames)
+            })
+        })
 
     })
 
     it('Verifies sorting of prices from high to low ', () => {
 
-        cy.get('.inventory_item .inventory_item_price').then(($products) =>{
-            const initialProductPrices = Array.from($products).map((product) => parseFloat(product.innerText.replace('$', '')));
+        let initialProductPrices;
 
-            // Click on the "Price (high to low)" button to sort the products
-            cy.get('.product_sort_container').select('hilo');
+        productPage.getProductPrices().then(prices => {
+            initialProductPrices = prices;
 
-            // Get the updated list of product prices after sorting
-            cy.get('.inventory_item .inventory_item_price').then(($updatedProducts) =>{
-                const updatedProductPrices = Array.from($updatedProducts).map((product) => parseFloat(product.innerText.replace('$', '')))
+            productPage.sortProducts('hilo')
 
-                // Verify that the product prices are sorted correctly from high to low
-
-                const sortedProductPrices = [...initialProductPrices].sort((a, b) => b -a);
+            productPage.getProductPrices().then(updatedProductPrices => {
+                const sortedProductPrices = [...initialProductPrices].sort((a,b) => b - a);
                 expect(updatedProductPrices).to.deep.equal(sortedProductPrices);
-            });
-        });
+            })
+        })
+
     });
 
     it('Verifying the product sorting by price (low to high)', () => {
 
-        // Get the initial list of product prices
-        cy.get('.inventory_item .inventory_item_price').then(($products) => {
-            const initialProductPrices = Array.from($products).map((product) => parseFloat(product.innerText.replace('$', '')))
+        let initialProductPrices;
 
-            // Click on the "Price (high to low)" button to sort the products
-            cy.get('.product_sort_container').select('lohi');
+        productPage.getProductPrices().then(prices => {
+            initialProductPrices = prices;
 
-            // Get the updated list of product prices after sorting
-            cy.get('.inventory_item .inventory_item_price').then(($updatedProducts) => {
-                const updatedProductPrices = Array.from($updatedProducts).map((product) => parseFloat(product.innerText.replace('$', '')))
+            productPage.sortProducts('lohi');
 
-                // Verify that the product prices are sorted correctly from high to low
-
-                const sortedProductPrices = [...initialProductPrices].sort((a, b) => a - b);
+            productPage.getProductPrices().then(updatedProductPrices => {
+                const sortedProductPrices = [...initialProductPrices].sort((a,b) => a - b);
                 expect(updatedProductPrices).to.deep.equal(sortedProductPrices);
-            });
-
-        });
+            })
+        })
 
     });
 });

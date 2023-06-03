@@ -1,6 +1,6 @@
 import LoginPage from "../pages/LoginPage";
 
-describe.only('Sauce Demo Logging', () => {
+describe.only('Login Page', () => {
   const loginPage = new LoginPage();
 
   beforeEach(() =>{
