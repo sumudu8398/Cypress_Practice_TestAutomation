@@ -55,4 +55,36 @@ describe('Product Page Sorting', () => {
             });
         });
     });
+
+    it('Verifying the product sorting by price (low to high)', () => {
+        cy.visit('https://www.saucedemo.com/');
+
+        // Log in with valid credentials
+        cy.get('[data-test="username"]').type('standard_user');
+        cy.get('[data-test="password"]').type('secret_sauce');
+        cy.get('[data-test="login-button"]').click();
+
+        // Wait for the inventory to load
+        cy.get('.inventory_item').should('have.length.greaterThan', 0);
+
+        // Get the initial list of product prices
+        cy.get('.inventory_item .inventory_item_price').then(($products) => {
+            const initialProductPrices = Array.from($products).map((product) => parseFloat(product.innerText.replace('$', '')))
+
+            // Click on the "Price (high to low)" button to sort the products
+            cy.get('.product_sort_container').select('lohi');
+
+            // Get the updated list of product prices after sorting
+            cy.get('.inventory_item .inventory_item_price').then(($updatedProducts) => {
+                const updatedProductPrices = Array.from($updatedProducts).map((product) => parseFloat(product.innerText.replace('$', '')))
+
+                // Verify that the product prices are sorted correctly from high to low
+
+                const sortedProductPrices = [...initialProductPrices].sort((a, b) => a - b);
+                expect(updatedProductPrices).to.deep.equal(sortedProductPrices);
+            });
+
+        });
+
+    });
 });
